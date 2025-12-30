@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نرخ طلا و ارز | قیمت لحظه‌ای</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.003/font.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold-primary: #FFD700;
+            --gold-secondary: #D4AF37;
+            --gold-tertiary: #B8860B;
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 215, 0, 0.05);
+            --card-border: rgba(212, 175, 55, 0.2);
+            --text-gold: #FFD700;
+            --text-light: #f8f9fa;
+            --text-gray: #adb5bd;
+            --up-color: #00d26a;
+            --down-color: #ff4757;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Gold Background */
+        .gold-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(184, 134, 11, 0.08) 0%, transparent 60%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            z-index: -2;
+        }
+
+        .gold-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(5, 196, 21, 0.4), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(212, 175, 55, 0.3), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 215, 0, 0.5), transparent);
+            background-size: 200px 200px;
+            z-index: -1;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(-100px) translateX(100px); }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 25%;
+            left: 25%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+            border-radius: 3px;
+        }
+
+        .header h1 {
+            font-size: 3.2rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .header p {
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Last Update */
+        .update-time {
+            text-align: center;
+            background: rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin: 0 auto 30px;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        .update-time i {
+            color: var(--gold-primary);
+            margin-left: 10px;
+        }
+
+        /* Cards Grid */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin: 50px 0 30px;
+            padding-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold-primary), transparent);
+            border-radius: 3px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+            .header h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Price Card */
+        .price-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 25px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(255, 215, 0, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.8s ease;
+        }
+
+        .price-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.1);
+        }
+
+        .price-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .asset-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .asset-symbol {
+            color: var(--gold-primary);
+            font-size: 0.95rem;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .price-container {
+            margin: 25px 0;
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .price-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+        }
+
+        .current-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            direction: ltr;
+            text-align: right;
+            color: var(--text-gold);
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .price-unit {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-right: 8px;
+            font-weight: 500;
+        }
+
+        /* Change Indicator */
+        .change-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid;
+        }
+
+        .change-up {
+            background-color: rgba(0, 210, 106, 0.15);
+            color: var(--up-color);
+            border-color: rgba(0, 210, 106, 0.3);
+        }
+
+        .change-down {
+            background-color: rgba(255, 71, 87, 0.15);
+            color: var(--down-color);
+            border-color: rgba(255, 71, 87, 0.3);
+        }
+
+        /* Footer & Credit */
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px 20px;
+            color: var(--text-gray);
+            font-size: 1rem;
+            border-top: 1px solid rgba(255, 215, 0, 0.1);
+            position: relative;
+        }
+
+        .credit {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            display: inline-block;
+        }
+
+        .credit a {
+            color: var(--gold-primary);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .credit a:hover {
+            color: var(--text-light);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Error State */
+        .error-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 71, 87, 0.05);
+            border: 1px solid rgba(255, 71, 87, 0.2);
+            border-radius: 20px;
+            margin: 40px 0;
+            display: none;
+        }
+
+        .error-message i {
+            font-size: 3rem;
+            color: var(--down-color);
+            margin-bottom: 20px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--gold-primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .linkw{
+            color: gold;
+           
+           
+           font-size: 30px;
+           border-radius: 50px;
+           font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Gold Background -->
+    <div class="gold-background"></div>
+    <div class="gold-particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-gem"></i> قیمت طلا و ارز</h1>
+            <p>نمایش لحظه‌ای قیمت طلا، سکه و ارزهای جهانی</p> <br>
+            <a class="linkw" href="erfan-web.ir">ERFAN-WEB</a>
+        
+        </header>
+
+        <!-- Last Update Time -->
+        <div class="update-time">
+            <i class="fas fa-clock"></i>
+            <span id="last-update">آخرین بروزرسانی: در حال دریافت...</span>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" class="error-message hidden">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>خطا در دریافت داده‌ها</h3>
+            <p>لطفاً اتصال اینترنت خود را بررسی کنید و دوباره تلاش نمایید.</p>
+        </div>
+
+        <!-- Gold & Coin Prices -->
+        <h2 class="section-title"><i class="fas fa-coins"></i> طلا و سکه</h2>
+        <div id="gold-container" class="cards-grid">
+            <!-- Gold cards will be inserted here -->
+        </div>
+
+        <!-- Currency Prices -->
+        <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> نرخ ارز</h2>
+        <div id="currency-container" class="cards-grid">
+            <!-- Currency cards will be inserted here -->
+        </div>
+
+        <!-- Cryptocurrency Prices -->
+        <h2 class="section-title"><i class="fas fa-chart-line"></i> رمزارزها</h2>
+        <div id="crypto-container" class="cards-grid">
+            <!-- Cryptocurrency cards will be inserted here -->
+        </div>
+
+        <!-- Footer & Credit -->
+        <footer class="footer">
+            <p>تمامی قیمت‌ها به صورت لحظه‌ای از منبع معتبر دریافت می‌شوند</p>
+            <div class="credit">
+                <i class="fas fa-code"></i> طراحی و توسعه: 
+                <a href="https://erfan-web.ir" target="_blank">عرفان علیخانی | erfan-web.ir</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            API_URL: 'https://brsapi.ir/Api/Market/Gold_Currency.php?key=BhD3Mr9w4iVWIT6wz6SlyMIW99kGvtcP',
+            REFRESH_INTERVAL: 30000 // 30 seconds
+        };
+
+        // State
+        let appState = {
+            lastUpdate: null,
+            updateInterval: null
+        };
+
+        // DOM Elements
+        const dom = {
+            goldContainer: document.getElementById('gold-container'),
+            currencyContainer: document.getElementById('currency-container'),
+            cryptoContainer: document.getElementById('crypto-container'),
+            errorMessage: document.getElementById('error-message'),
+            lastUpdate: document.getElementById('last-update')
+        };
+
+        // Initialize
+        function init() {
+            fetchData();
+            startAutoRefresh();
+        }
+
+        // Start auto refresh every 30 seconds
+        function startAutoRefresh() {
+            if (appState.updateInterval) {
+                clearInterval(appState.updateInterval);
+            }
+            
+            appState.updateInterval = setInterval(fetchData, CONFIG.REFRESH_INTERVAL);
+        }
+
+        // Fetch data from API
+        async function fetchData() {
+            try {
+                const response = await fetch(CONFIG.API_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                appState.lastUpdate = new Date();
+                
+                updateDisplay(data);
+                updateTimestamp();
+                hideError();
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showError();
+            }
+        }
+
+        // Update UI with fetched data
+        function updateDisplay(data) {
+            // Clear previous content
+            dom.goldContainer.innerHTML = '';
+            dom.currencyContainer.innerHTML = '';
+            dom.cryptoContainer.innerHTML = '';
+
+            // Display gold prices
+            if (data.gold && Array.isArray(data.gold)) {
+                // Filter to show only major gold items
+                const majorGoldItems = data.gold.filter(item => 
+                    ['IR_GOLD_18K', 'IR_GOLD_24K', 'IR_COIN_EMAMI', 'IR_COIN_BAHAR'].includes(item.symbol)
+                );
+                
+                majorGoldItems.forEach(item => createPriceCard(item, dom.goldContainer, 'gold'));
+            }
+
+            // Display currency prices
+            if (data.currency && Array.isArray(data.currency)) {
+                // Show only major currencies
+                const majorCurrencies = ['USD', 'EUR', 'GBP', 'AED', 'JPY', 'KWD', 'CAD'];
+                const filteredCurrencies = data.currency.filter(item => 
+                    majorCurrencies.includes(item.symbol)
+                );
+                
+                filteredCurrencies.forEach(item => createPriceCard(item, dom.currencyContainer, 'currency'));
+            }
+
+            // Display cryptocurrency prices
+            if (data.cryptocurrency && Array.isArray(data.cryptocurrency)) {
+                data.cryptocurrency.forEach(item => createPriceCard(item, dom.cryptoContainer, 'crypto'));
+            }
+        }
+
+        // Create a price card element
+        function createPriceCard(item, container, type) {
+            const card = document.createElement('div');
+            card.className = 'price-card';
+            
+            // Icons based on type
+            let icon = 'fas fa-gem';
+            if (type === 'currency') icon = 'fas fa-money-bill-wave';
+            if (type === 'crypto') icon = 'fas fa-bitcoin';
+            
+            // Format price
+            const formattedPrice = formatPrice(item.price);
+            
+            // Calculate change
+            const changePercent = item.change_percent || 0;
+            const changeValue = item.change_value || 0;
+            const isPositive = changePercent >= 0;
+            const changeClass = isPositive ? 'change-up' : 'change-down';
+            const changeIcon = isPositive ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <div>
+                        <div class="asset-name">${item.name || item.name_en}</div>
+                        <div class="asset-symbol">${item.symbol}</div>
+                    </div>
+                    <i class="${icon}" style="font-size: 2rem; color: rgba(255, 215, 0, 0.7);"></i>
+                </div>
+                
+                <div class="price-container">
+                    <div class="current-price">
+                        <span class="price-unit">${item.unit || 'تومان'}</span>
+                        ${formattedPrice}
+                    </div>
+                </div>
+                
+                <div class="change-indicator ${changeClass}">
+                    <i class="${changeIcon}"></i>
+                    <span>${Math.abs(changePercent).toFixed(2)}%</span>
+                    <span>(${isPositive ? '+' : ''}${formatPrice(changeValue)})</span>
+                </div>
+                
+                ${item.description ? `
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.9rem; color: var(--text-gray);">
+                        ${item.description}
+                    </div>
+                ` : ''}
+                
+                <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-gray);">
+                    <i class="far fa-calendar"></i>
+                    ${item.date} - ${item.time}
+                </div>
+            `;
+            
+            container.appendChild(card);
+        }
+
+        // Format price with Persian thousand separators
+        function formatPrice(price) {
+            const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+            
+            if (isNaN(numPrice)) return price;
+            
+            if (Math.abs(numPrice) < 0.01) {
+                return numPrice.toFixed(6);
+            }
+            
+            return new Intl.NumberFormat('fa-IR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }).format(numPrice);
+        }
+
+        // Update timestamp
+        function updateTimestamp() {
+            if (!appState.lastUpdate) return;
+            
+            const persianDate = appState.lastUpdate.toLocaleDateString('fa-IR');
+            const persianTime = appState.lastUpdate.toLocaleTimeString('fa-IR', { 
+                hour: '2-digit', 
+                minute: '2-digit'
+            });
+            
+            dom.lastUpdate.textContent = `آخرین بروزرسانی: ${persianDate} - ${persianTime}`;
+        }
+
+        // Show error state
+        function showError() {
+            dom.errorMessage.style.display = 'block';
+        }
+
+        // Hide error state
+        function hideError() {
+            dom.errorMessage.style.display = 'none';
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
